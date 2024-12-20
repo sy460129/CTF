@@ -1,12 +1,29 @@
-FROM ubuntu@sha256:27cb6e6ccef575a4698b66f5de06c7ecd61589132d5a91d098f7f3f9285415a9
+FROM ubuntu:22.04@sha256:b6b83d3c331794420340093eb706a6f152d9c1fa51b262d9bf34594887c2c7ac
 
-RUN apt update
+RUN apt-get update
 RUN apt-get install -y socat
 
-COPY ./flag /flag
-COPY ./chall /chall
+# ENV user pwn
 
-RUN chmod 755 /flag /chall
+# RUN adduser $user
 
-EXPOSE 4646
-CMD socat TCP-LISTEM:4646, reuseaddr, fork EXEC:/chall
+# ADD ./flag /home/$user/flag
+# ADD ./chall /home/$user/chall
+ADD ./flag /home/rand/flag
+ADD ./chall /home/rand/chall
+
+# RUN chown root:$user /home/$user/flag
+# RUN chown root:$user /home/$user/chall
+# RUN chown /home/rand/flag
+# RUN chown /home/rand/chall
+
+# RUN chmod 440 /home/$user/flag
+# RUN chmod 755 /home/$user/chall
+RUN chmod 440 /home/rand/flag
+RUN chmod 755 /home/rand/chall
+
+WORKDIR /home/rand
+# USER $user
+
+EXPOSE 1337
+CMD socat -T 90 TCP-LISTEN:1337,reuseaddr,fork EXEC:./chall
